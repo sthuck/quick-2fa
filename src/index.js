@@ -6,6 +6,16 @@ const notifier = require('node-notifier');
 const keytar = require('keytar');
 const ncp = require('copy-paste');
 
+function waitForTime() {
+  const seconds = new Date().getSeconds() % 30;
+  if (seconds < 27) {
+    return Promise.resolve(true);
+  }
+  return new Promise(resolve => {
+    setTimeout(() => resolve(), (30 - seconds) * 1000);
+  });
+}
+
 if (!process.argv[2]) {
   console.error('Usage: quick-2fa --save KEY-NAME YOUR-KEY');
   console.error('Usage: quick-2fa KEY-NAME');
@@ -31,16 +41,18 @@ if (!key) {
   process.exit(1);
 }
 
-const token = speakeasy.totp({
-  secret: key,
-  encoding: 'base32'
+waitForTime().then(() => {
+  const token = speakeasy.totp({
+    secret: key,
+    encoding: 'base32'
+  });
+
+  ncp.copy(token);
+
+  notifier.notify({
+    title: 'quick-2fa',
+    message: token
+  });
+
+  console.log(token);
 });
-
-ncp.copy(token);
-
-notifier.notify({
-  title: 'quick-2fa',
-  message: token
-});
-
-console.log(token);
