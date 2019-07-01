@@ -35,15 +35,6 @@
     "chai": "^3.5.0",
     "yoshi": "latest"
   },
-  "babel": {
-    "presets": [
-      "es2015",
-      "stage-0"
-    ],
-    "plugins": [
-      "transform-runtime"
-    ]
-  },
   "eslintConfig": {
     "extends": "wix/esnext"
   },
